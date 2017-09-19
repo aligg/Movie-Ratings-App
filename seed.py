@@ -48,16 +48,24 @@ def load_movies():
     for i in range(len(result)):
         movie_id = result[i][0]
         title = [result[i][1]]
+
         for item in title:
             item = item.split(" ")
             item.pop()
-            item = " ".join(item)
+            title = " ".join(item)
+
         released_str = result[i][2]
-        imdb_url = result[i][3]
+
+
+        imdb_url = result[i][4]
+
         if released_str:
             released_at = datetime.strptime(released_str, "%d-%b-%Y").date()
+
         else:
             released_at = None
+
+
 
         movie = Movie(movie_id=movie_id,
                 title=title,
@@ -70,18 +78,20 @@ def load_movies():
 def load_ratings():
     """Load ratings from u.data into database."""
 
-    #user_id \t movie_id \t score \t timestamp.
     Rating.query.delete()
 
-    f = open("seed_data/u.data")
+    f=open("seed_data/u.data")
     lines = f.readlines()
     result = []
+
     for item in lines:
-        result.append(item.split(' '))
+        result.append(item.split('\t'))
+
     for i in range(len(result)):
-        user_id = result[0]
-        movie_id = result[1]
-        score = result[3]
+        user_id = result[i][0]
+        movie_id = result[i][1]
+        score = result[i][2]
+
 
         rating = Rating(user_id=user_id,
                         movie_id=movie_id,
@@ -107,6 +117,7 @@ def set_val_user_id():
 
 
 if __name__ == "__main__":
+
     connect_to_db(app)
 
     # In case tables haven't been created, create them
