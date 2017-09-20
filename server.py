@@ -91,7 +91,7 @@ def login_handler():
     else:
         flash("email doesn't exist")
         return redirect("/register")
-    return redirect("/")
+    return redirect("/userdetails/%s" % user.user_id)
 
 
 @app.route("/logout")
@@ -102,14 +102,34 @@ def logout_handler():
     flash("You are currently logged out")
     return redirect("/")
 
-@app.route("/userdetails")
-def user_info():
+
+@app.route("/userdetails/<user_id>")
+def user_info(user_id):
     """Display user age, zipcode, rated movies & scores"""
-    user_id = request.args.get("user_id")
+
 
     user = User.query.filter_by(user_id=user_id).one()
-    print user, "USER PRINT"
-    return render_template("user_details.html")
+
+    user_zipcode = user.zipcode
+    user_age = user.age
+
+    movie_ratings = {}
+    for rating in user.ratings:
+        title = rating.movie.title
+        score = rating.score
+        movie_ratings[title] = score
+    print movie_ratings
+
+    return render_template("user_details.html", user_zipcode=user_zipcode, user_age=user_age, movie_ratings=movie_ratings)
+
+
+@app.route("/movielist")
+def movie_list():
+    """Displays long list of all the movies"""
+    movies = Movie.query.order_by('title').all()
+
+
+    return render_template("movie_list.html", movies=movies)
 
 
 if __name__ == "__main__":

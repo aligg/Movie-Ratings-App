@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
+    <h2>User Details</h2>
+  <ul>User of age {{ user_age}} at zipcode {{ user_zipcode }}, rated as follows:</ul>
+  <li>{%for title,score in movie_ratings.items()%}</li>
+  <li>Movie: {{title}} Score:{{score}}</li>
+  {%endfor%}
 
-    <h2>Hello!</h2>
 
 
 {% endblock %}
