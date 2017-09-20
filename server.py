@@ -51,10 +51,13 @@ def register_process():
 
     user_check = User.query.filter_by(email=email).all()
 
-
     if user_check == []:
-        new_user = User(email=email,password = password)
+        new_user = User(email=email, password=password)
         db.session.add(new_user)
+        ## add flash and redirect to sign in page if exists
+    else:
+        flash('Looks like you already have an account. Sign in!')
+        return redirect("/login")
 
     db.session.commit()
 
@@ -72,18 +75,22 @@ def login_handler():
     """Handles login form inputs, if valid login credentials
     redirect to homepage and flash message
     """
-    #if password and email are in database redirect to homepage and
-    #add user id to flask session and flash message
 
     email = request.form.get("email")
     password = request.form.get("password")
 
+    user = User.query.filter_by(email=email).first()
 
-
-    if User.query.filter_by(email=email, password=password).all():
-        currentuser = User.query.filter_by(email=email).one()
-        session["User ID"] = currentuser.user_id
-        flash("You are currently logged in")
+    if user:
+        if user.password == password:
+            session["User ID"] = user.user_id
+            flash("You are currently logged in")
+        else:
+            flash("Incorrect password")
+            return redirect("/login")
+    else:
+        flash("email doesn't exist")
+        return redirect("/register")
     return redirect("/")
 
 
@@ -94,6 +101,13 @@ def logout_handler():
     print session
     flash("You are currently logged out")
     return redirect("/")
+
+@app.route("/userdetails")
+def user_info():
+    """Display user age, zipcode, rated movies & scores"""
+    user = User.query.filter_by(user_id="user_id").one()
+    print user, "USER PRINT"
+    return render_template("user_details.html")
 
 
 if __name__ == "__main__":
