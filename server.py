@@ -87,6 +87,15 @@ def login_handler():
     return redirect("/")
 
 
+@app.route("/logout")
+def logout_handler():
+    """logs users out"""
+    session.pop("User ID", None)
+    print session
+    flash("You are currently logged out")
+    return redirect("/")
+
+
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
     # point that we invoke the DebugToolbarExtension
