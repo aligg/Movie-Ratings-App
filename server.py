@@ -2,7 +2,8 @@
 
 from jinja2 import StrictUndefined
 
-from flask import (Flask, jsonify, render_template, redirect, request, flash, session)
+from flask import (Flask, jsonify, render_template,
+                redirect, request, flash, session)
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Rating, Movie
@@ -42,19 +43,48 @@ def register_form():
 
 @app.route("/register", methods=["POST"])
 def register_process():
-    """Processes registration successfully"""
-    # Add a route that processes the registration form, checking to see if a user with that email address exists
-    # , and if not, creating a new user in the database.
+    """Processes registration, adding user to DB if do not exist already"""
+
 
     email = request.form.get("email")
+    password = request.form.get("password")
 
-    if not User.query.filter_by(email=email):
-        new_user = User(email)
+    user_check = User.query.filter_by(email=email).all()
+
+
+    if user_check == []:
+        new_user = User(email=email,password = password)
         db.session.add(new_user)
-        db.session.commit()
+
+    db.session.commit()
 
     return redirect("/")
 
+@app.route("/login")
+def login_form():
+    """Displays login form"""
+
+    return render_template("login_form.html")
+
+
+@app.route("/login", methods=["POST"])
+def login_handler():
+    """Handles login form inputs, if valid login credentials
+    redirect to homepage and flash message
+    """
+    #if password and email are in database redirect to homepage and
+    #add user id to flask session and flash message
+
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+
+
+    if User.query.filter_by(email=email, password=password).all():
+        currentuser = User.query.filter_by(email=email).one()
+        session["User ID"] = currentuser.user_id
+        flash("You are currently logged in")
+    return redirect("/")
 
 
 if __name__ == "__main__":
