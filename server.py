@@ -105,7 +105,9 @@ def logout_handler():
 @app.route("/userdetails")
 def user_info():
     """Display user age, zipcode, rated movies & scores"""
-    user = User.query.filter_by(user_id="user_id").one()
+    user_id = request.args.get("user_id")
+
+    user = User.query.filter_by(user_id=user_id).one()
     print user, "USER PRINT"
     return render_template("user_details.html")
 
