@@ -132,6 +132,52 @@ def movie_list():
     return render_template("movie_list.html", movies=movies)
 
 
+@app.route("/moviedetails/<movie_id>", methods=['GET'])
+def movie_details(movie_id):
+    """Display movie details and allow logged in users to rate"""
+    movie = Movie.query.filter_by(movie_id=movie_id).one()
+
+    if session == {}:
+        loggedin = "False"
+    else:
+        loggedin = "True"
+
+
+
+    return render_template("movie_details.html", movie=movie, loggedin=loggedin)
+
+@app.route("/moviedetails/<movie_id>", methods=["POST"])
+def rating_handler(movie_id):
+    """Handle submissions from rating form & make updates, then redirect to movie details page"""
+
+    rating = request.form.get("rating")
+
+    user = User.query.filter_by(user_id=session["User ID"]).one()
+    print "hello"
+    for rating in user.ratings:
+        print rating, "RATING"
+        print rating.movie_id, 'Rating . movie id'
+        print movie_id, "MOVIE ID"
+
+        if rating.movie_id == movie_id:
+            curr_rating = rating
+            print rating, "RATING"
+        else:
+            print "NOT Yet Rated"
+
+
+    #check if user_id in rating already
+
+
+    #if from the session we see they are not logged in
+    #hold form back and flash message to login or set form to disabled
+    #if logged in then update score if user rated previously or create new rating
+
+    return redirect("/")
+
+
+
+
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
     # point that we invoke the DebugToolbarExtension

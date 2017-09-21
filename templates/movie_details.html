@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+    <span id='loggedin' data-loggedin="{{loggedin}}"></span>
+    <h1>Rate this Movie</h1>
+    <form action='/moviedetails/<movie_id>'  method="post" id="ratingform">
+        <label for="Movie">{{movie.title}}</label>
+        <select name="rating"form="ratingform">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <br></br>
+        {% if 'User ID' in session %}
+            <button type="submit">Submit</button>
+        {% endif %}
+    <form>
+    <h2>Movie Details</h2>
+    <ul>
+        <li>{{movie.title}}</li>
+        <li>{{movie.imdb_url}}</li>
+        <li>{{movie.released_at}}</li>
+        {%for rating in movie.ratings%}
+        <li>User {{rating.user_id}} rated this a: {{rating.score}}</li>
+        {%endfor%}
+    </ul>
+
+
+{% endblock %}
