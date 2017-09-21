@@ -2,8 +2,9 @@
 {% block content %}
     <span id='loggedin' data-loggedin="{{loggedin}}"></span>
     <h1>Rate this Movie</h1>
-    <form action='/moviedetails/<movie_id>'  method="post" id="ratingform">
+    <form action='/moviedetails/{{movie.movie_id}}'  method="post" id="ratingform">
         <label for="Movie">{{movie.title}}</label>
+        <input type="hidden" name="movie_id" value={{movie.movie_id}}>
         <select name="rating"form="ratingform">
             <option value="1">1</option>
             <option value="2">2</option>

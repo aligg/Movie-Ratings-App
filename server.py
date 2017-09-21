@@ -146,35 +146,27 @@ def movie_details(movie_id):
 
     return render_template("movie_details.html", movie=movie, loggedin=loggedin)
 
-@app.route("/moviedetails/<movie_id>", methods=["POST"])
+@app.route("/moviedetails/<int:movie_id>", methods=["POST"])
 def rating_handler(movie_id):
     """Handle submissions from rating form & make updates, then redirect to movie details page"""
 
-    rating = request.form.get("rating")
-
+    new_rating = int(request.form.get("rating"))
+    curr_movie_id = movie_id
     user = User.query.filter_by(user_id=session["User ID"]).one()
-    print "hello"
-    for rating in user.ratings:
-        print rating, "RATING"
-        print rating.movie_id, 'Rating . movie id'
-        print movie_id, "MOVIE ID"
-
-        if rating.movie_id == movie_id:
-            curr_rating = rating
-            print rating, "RATING"
-        else:
-            print "NOT Yet Rated"
 
 
-    #check if user_id in rating already
+    for item in user.ratings:
+        if curr_movie_id == item.movie_id:
+            item.score = new_rating
+            flash("Your rating has been updated to %d" % new_rating)
+            db.session.commit()
+            return redirect("/moviedetails/%d" % curr_movie_id)
 
-
-    #if from the session we see they are not logged in
-    #hold form back and flash message to login or set form to disabled
-    #if logged in then update score if user rated previously or create new rating
-
-    return redirect("/")
-
+    rating = Rating(movie_id=curr_movie_id, user_id=user.user_id, score=new_rating)
+    flash("Your rating of %d has been added" % new_rating)
+    db.session.add(rating)
+    db.session.commit()
+    return redirect("/moviedetails/%d" % curr_movie_id)
 
 
 

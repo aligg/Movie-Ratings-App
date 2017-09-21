@@ -5,7 +5,16 @@
 </head>
 <body>
     Ratings
-    <a href = "/logout">Logout</a>
+        {% if 'User ID' in session %}
+             <a href = "/userdetails/{{session["User ID"]}}">Profile</a>
+        {% endif %}
+        {% if 'User ID' in session %}
+             <a href = "/logout">Logout</a>
+        {% endif %}
+        {% if 'User ID' not in session %}
+             <a href = "/login">Login</a>
+        {% endif %}
+
        <ul>
   {% for message in get_flashed_messages() %}
     <li>{{ message }}</li>
